@@ -2,6 +2,7 @@
 
 namespace Stplus\ZipcodeChecker\Handlers;
 
+use Cache\Adapter\Common\AbstractCachePool;
 use Stplus\ZipcodeChecker\Address;
 
 abstract class ZipcodeHandler implements ZipcodeHandlerInterface
@@ -12,7 +13,11 @@ abstract class ZipcodeHandler implements ZipcodeHandlerInterface
      * @var Address
      */
     protected $address;
-    protected $memcacheD;
+
+    /**
+     * @var AbstractCachePool
+     */
+    protected $cachePool;
 
     public function setNextHandler(ZipcodeHandlerInterface $nextHandler)
     {
@@ -20,9 +25,9 @@ abstract class ZipcodeHandler implements ZipcodeHandlerInterface
 
     }
 
-    public function handle(Address $address, \Memcached $memcacheD): Address
+    public function handle(Address $address, AbstractCachePool $cachePool): Address
     {
-        $this->memcacheD = $memcacheD;
+        $this->cachePool = $cachePool;
 
         echo get_class($this) . ' : ' . $address->getZipcode() . " => ";
 
@@ -33,7 +38,7 @@ abstract class ZipcodeHandler implements ZipcodeHandlerInterface
             return $this->address;
         } elseif ($this->nextHandler) {
             echo "Computer says no...<br/>";
-            $this->nextHandler->handle($address, $memcacheD);
+            $this->nextHandler->handle($address, $cachePool);
         }
 
         return $this->address;
@@ -48,8 +53,8 @@ abstract class ZipcodeHandler implements ZipcodeHandlerInterface
     private function writeAdressToCache()
     {
         if (null != $this->address->getStreet()) {
-            $this->memcacheD->set(ZipcodeHandlerCache::getCacheKey($this->address), serialize($this->address));
-            var_dump($this->memcacheD->get(ZipcodeHandlerCache::getCacheKey($this->address)));
+            $this->cachePool->set(ZipcodeHandlerCache::getCacheKey($this->address), serialize($this->address));
+            var_dump($this->cachePool->get(ZipcodeHandlerCache::getCacheKey($this->address)));
         }
     }
 

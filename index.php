@@ -8,6 +8,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 $memcacheD = new \Memcached();
 $memcacheD->addServer('127.0.0.1', 11211);
+$cachePool = new MemcachedCachePool($memcacheD);
 
 $chain = [];
 $chain[] = new Handlers\ZipcodeHandlerCache();
@@ -25,7 +26,7 @@ foreach($chain as $key=>$handler){
 $addressInput = new Address('9000','3068HL','Nederland');
 
 // start thechain
-$chain[0]->handle($addressInput, $memcacheD);
+$chain[0]->handle($addressInput, $cachePool);
 
 var_dump($addressInput);
 

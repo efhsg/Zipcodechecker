@@ -21,7 +21,7 @@ class ZipcodeHandlerCache extends ZipcodeHandler
 
     protected function fetchAdress(): bool
     {
-        $cached = $this->memcacheD->get(self::getCacheKey($this->address));
+        $cached = $this->cachePool->get(self::getCacheKey($this->address));
         if ($cached) {
             $this->fillAdress($cached);
             return true;
