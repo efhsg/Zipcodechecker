@@ -8,11 +8,12 @@
 
 namespace Stplus\ZipcodeChecker\Handlers;
 
+use Cache\Adapter\Common\AbstractCachePool;
 use  Stplus\ZipcodeChecker\Address;
 
 interface ZipcodeHandlerInterface
 {
     public function setNextHandler(ZipcodeHandlerInterface $nextHandler);
 
-    public function handle(Address $address, \Memcached $memcacheD): Address;
+    public function handle(Address $address, AbstractCachePool $memcacheD): Address;
 }
